@@ -1,6 +1,8 @@
 package org.github.olopesgabriel.network
 
 import org.github.olopesgabriel.logging.Logger
+import org.github.olopesgabriel.messaging.Device
+import org.github.olopesgabriel.messaging.InboundMessage
 import java.io.BufferedInputStream
 import java.io.DataInputStream
 import java.net.Socket
@@ -13,7 +15,7 @@ class SocketMessageReader(
         private val logger = Logger.getLogger<SocketMessageReader>()
     }
 
-    private var listeners: List<OnMessageReceivedListener> = ArrayList()
+    private var listener: OnMessageReceivedListener<InboundMessage>? = null
 
     override fun run() {
         readSocket(socket)
@@ -24,21 +26,26 @@ class SocketMessageReader(
         do {
             val buffer = ByteArray(1024)
             inputStream.read(buffer)
-            val message = String(buffer)
+            val message = createStringFromInput(buffer)
             if (message.isNotEmpty()) {
                 onMessageReceived(message)
             }
         } while (true)
     }
 
-    fun setListeners(listeners: List<OnMessageReceivedListener>) {
-        this.listeners = listeners
+    private fun createStringFromInput(input: ByteArray): String {
+        val validBytes = input.filter { it.toInt() != 0 }
+        return String(validBytes.toByteArray(), Charsets.UTF_8)
     }
 
-    private fun onMessageReceived(message: String) {
-        logger.info("${socket.inetAddress.hostAddress} enviou a mensagem \"$message\"")
-        for (listener in listeners) {
-            listener.onMessageReceivedListener(message)
-        }
+    fun setListener(listener: OnMessageReceivedListener<InboundMessage>?) {
+        this.listener = listener
+    }
+
+    private fun onMessageReceived(text: String) {
+        logger.info("${socket.inetAddress.hostAddress} enviou a mensagem \"$text\"")
+        val anonymousDevice = Device.anonymous(socket)
+        val message = InboundMessage(anonymousDevice, text)
+        listener?.onMessageReceivedListener(message)
     }
 }
