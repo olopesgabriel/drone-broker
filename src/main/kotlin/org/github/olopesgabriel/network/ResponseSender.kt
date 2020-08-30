@@ -10,7 +10,9 @@ class ResponseSender : OnMessageReceivedListener<OutboundMessage> {
         val socket = outboundMessage.to.socket
         val outputStream = DataOutputStream(BufferedOutputStream(socket.getOutputStream()))
 
-        outputStream.write(outboundMessage.text.toByteArray(Charsets.UTF_8))
+        val message = "[${outboundMessage.from.name}] ${outboundMessage.text}"
+
+        outputStream.write(message.toByteArray(Charsets.UTF_8))
         outputStream.flush()
     }
 

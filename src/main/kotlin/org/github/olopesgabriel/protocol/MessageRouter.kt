@@ -45,7 +45,7 @@ class MessageRouter(
         val knownDevice = getKnownDevice(message.from)
         val listeners = listeners[knownDevice.name] ?: emptyList<Device>()
         for (listener in listeners) {
-            val outboundMessage = OutboundMessage(listener, message.text)
+            val outboundMessage = OutboundMessage(listener, knownDevice, message.text)
             outboundMessageQueue.send(outboundMessage)
             logger.info("Mensagem \"${outboundMessage.text}\" será enviada ao dispositivo \"${listener.name}\"")
         }
