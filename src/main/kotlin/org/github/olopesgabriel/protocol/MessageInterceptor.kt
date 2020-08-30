@@ -13,6 +13,7 @@ class MessageInterceptor (
         when(messageCommand.command) {
             "init" -> messageRouter.createRoute(messageCommand.target, message.from)
             "listen" -> messageRouter.createListener(messageCommand.target, message.from)
+            "disconnect" -> messageRouter.removeDevice(message.from)
             else -> messageRouter.routeMessage(message)
         }
     }

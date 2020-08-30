@@ -6,6 +6,7 @@ import org.github.olopesgabriel.messaging.InboundMessage
 import java.io.BufferedInputStream
 import java.io.DataInputStream
 import java.net.Socket
+import java.net.SocketException
 
 class SocketMessageReader(
     private val socket: Socket
@@ -24,13 +25,23 @@ class SocketMessageReader(
     private fun readSocket(socket: Socket) {
         val inputStream = DataInputStream(BufferedInputStream((socket.getInputStream())))
         do {
-            val buffer = ByteArray(1024)
-            inputStream.read(buffer)
-            val message = createStringFromInput(buffer)
-            if (message.isNotEmpty()) {
-                onMessageReceived(message)
+            try {
+                readMessage(inputStream)
+            } catch (ex: SocketException) {
+                logger.info("O cliente ${socket.inetAddress.hostAddress} se disconectou")
+                onMessageReceived("disconnect")
+                break
             }
         } while (true)
+    }
+
+    private fun readMessage(inputStream: DataInputStream) {
+        val buffer = ByteArray(1024)
+        inputStream.read(buffer)
+        val message = createStringFromInput(buffer)
+        if (message.isNotEmpty()) {
+            onMessageReceived(message)
+        }
     }
 
     private fun createStringFromInput(input: ByteArray): String {

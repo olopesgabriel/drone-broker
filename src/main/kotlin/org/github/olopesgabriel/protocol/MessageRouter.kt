@@ -51,6 +51,20 @@ class MessageRouter(
         }
     }
 
+    fun removeDevice(device: Device) {
+        val knownDevice = getKnownDevice(device)
+        devices.remove(knownDevice.ipAddress)
+        routes.remove(knownDevice.name)
+        for (key in listeners.keys) {
+            val routeListeners = listeners[key] ?: continue
+            for (listener in routeListeners) {
+                if (listener.ipAddress == knownDevice.ipAddress) {
+                    routeListeners.remove(listener)
+                }
+            }
+        }
+    }
+
     private fun getKnownDevice(device: Device): Device {
         if (devices.containsKey(device.ipAddress)) {
             return devices[device.ipAddress]!!
