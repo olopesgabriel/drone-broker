@@ -1,6 +1,5 @@
 package org.github.olopesgabriel.network
 
-interface OnMessageReceivedListener {
-
-    fun onMessageReceivedListener(message: String)
+interface OnMessageReceivedListener<T> {
+    fun onMessageReceivedListener(message: T)
 }
