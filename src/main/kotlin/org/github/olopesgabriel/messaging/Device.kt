@@ -10,6 +10,12 @@ data class Device(
     val ipAddress: String
         get() = socket.inetAddress.hostAddress
 
+    val macAddress: String
+        get() {
+            // TODO: Implementar método que pega o Mac Address to Socket
+            return ""
+        }
+
     companion object {
         fun anonymous(socket: Socket): Device {
             return Device("anonymous", socket)

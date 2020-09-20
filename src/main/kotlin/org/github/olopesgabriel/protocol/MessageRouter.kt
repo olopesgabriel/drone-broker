@@ -57,10 +57,15 @@ class MessageRouter(
         routes.remove(knownDevice.name)
         for (key in listeners.keys) {
             val routeListeners = listeners[key] ?: continue
+            val listenersToRemove = ArrayList<Device>()
             for (listener in routeListeners) {
                 if (listener.ipAddress == knownDevice.ipAddress) {
-                    routeListeners.remove(listener)
+                    listenersToRemove.add(listener)
                 }
+            }
+
+            for (listenerToRemove in listenersToRemove) {
+                routeListeners.remove(listenerToRemove)
             }
         }
     }

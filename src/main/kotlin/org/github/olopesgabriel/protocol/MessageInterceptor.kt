@@ -11,6 +11,7 @@ class MessageInterceptor (
         val messageCommand = CommandMessage(message.text)
 
         when(messageCommand.command) {
+            // TODO: Tratar a mensagem de "connected"
             "init" -> messageRouter.createRoute(messageCommand.target, message.from)
             "listen" -> messageRouter.createListener(messageCommand.target, message.from)
             "disconnect" -> messageRouter.removeDevice(message.from)

@@ -19,7 +19,12 @@ class SocketMessageReader(
     private var listener: OnMessageReceivedListener<InboundMessage>? = null
 
     override fun run() {
+        sendConnectedMessage()
         readSocket(socket)
+    }
+
+    private fun sendConnectedMessage() {
+        onMessageReceived("connected")
     }
 
     private fun readSocket(socket: Socket) {
